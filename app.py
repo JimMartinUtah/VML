@@ -231,7 +231,7 @@ ui.tags.style("""
     body, .bslib-page-fill { padding-top: 52px !important; }
     .app-banner {
         position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
-        background-color: #2c5f8a; color: white;
+        background-color: #d32f2f; color: white;
         padding: 10px 20px; display: flex; align-items: center;
     }
     /* Plots scale to container width */
