@@ -282,7 +282,7 @@ with ui.sidebar(open="desktop"):
             ui.input_slider("onset", "Onset (% of cycle)", min=0, max=74, value=22),
             ui.input_slider("offset", "Offset (% of cycle)", min=1, max=99, value=66),
             ui.input_slider("excursion", "Excursion amplitude (mm)", min=1, max=50, value=20),
-            ui.input_slider("cycle_freq", "Cycle frequency (Hz)", min=0.5, max=4.5, value=2.0),
+            ui.input_slider("cycle_freq", "Cycle frequency (Hz)", min=0.5, max=5.0, value=2.0, step=0.5),
             ui.input_numeric("length_optimal", "Length optimal (m)", value=0.084),
             ui.input_numeric("max_isometric_force", "Max isometric force (N)", value=1871),
             ui.input_numeric("max_velocity", "Max velocity (fiber lengths/s)", value=10),
