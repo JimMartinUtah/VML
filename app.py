@@ -323,14 +323,14 @@ with ui.card():
                 cycle_pct_theoretical = theoretical_results['sim_data']['cycle_pct']
 
                 if is_mobile:
-                    fig, axes = plt.subplots(4, 1, figsize=(5, 15.6))
+                    fig, axes = plt.subplots(4, 1, figsize=(5, 17.94), gridspec_kw={'height_ratios': [1, 1, 1.3, 1.3]})
                     ax_p, ax_v, ax_f, ax_pw = axes
                     legend_kw = dict(fontsize=7, loc='upper right')
                     tick_kw = dict(labelsize=7)
                     xlabel_kw = dict(fontsize=7)
                     title_kw = dict(fontsize=8)
                 else:
-                    fig, axs = plt.subplots(2, 2, figsize=(9, 8.4))
+                    fig, axs = plt.subplots(2, 2, figsize=(9, 9.66), gridspec_kw={'height_ratios': [1, 1.3]})
                     ax_p, ax_v, ax_f, ax_pw = axs[0,0], axs[0,1], axs[1,0], axs[1,1]
                     legend_kw = dict()
                     tick_kw = dict()
