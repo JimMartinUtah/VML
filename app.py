@@ -244,6 +244,8 @@ ui.tags.style("""
     /* Right-align the Show Workloop toggle below the figures */
     .workloop-toggle-right { display: flex; justify-content: flex-end; margin-top: 0; margin-bottom: 2px; }
     .workloop-toggle-right .shiny-input-container { width: auto; margin-bottom: 0; }
+    /* Reduce the left-hand sidebar font size by 1 point (default is 12pt) */
+    .bslib-sidebar-layout > .sidebar, .bslib-sidebar-layout .sidebar-content { font-size: 11pt; }
     /* Mobile adjustments */
     @media (max-width: 767px) {
         .app-banner { padding: 8px 12px; }
