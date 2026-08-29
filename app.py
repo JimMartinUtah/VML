@@ -245,7 +245,7 @@ ui.tags.style("""
     .workloop-toggle-right { display: flex; justify-content: flex-end; margin-top: 0; margin-bottom: 2px; }
     .workloop-toggle-right .shiny-input-container { width: auto; margin-bottom: 0; }
     /* Reduce the left-hand sidebar font size by 1 point (default is 12pt) */
-    .bslib-sidebar-layout > .sidebar, .bslib-sidebar-layout .sidebar-content { font-size: 11pt; }
+    .bslib-sidebar-layout > .sidebar, .bslib-sidebar-layout .sidebar-content { font-size: 12pt; }
     /* Mobile adjustments */
     @media (max-width: 767px) {
         .app-banner { padding: 8px 12px; }
@@ -293,7 +293,7 @@ ui.div(
     class_="app-banner"
 )
 
-with ui.sidebar(open="desktop"):
+with ui.sidebar(open="desktop", width="320px"):
             ui.input_slider("onset", "Onset (% of cycle)", min=0, max=74, value=22),
             ui.input_slider("offset", "Offset (% of cycle)", min=1, max=99, value=66),
             ui.input_slider("excursion", "Excursion amplitude (mm)", min=1, max=50, value=20),
