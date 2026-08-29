@@ -242,7 +242,7 @@ ui.tags.style("""
     .card-body { padding-top: 0.5rem !important; }
     #combined_graphs { margin-top: -4px; }
     /* Right-align the Show Workloop toggle below the figures */
-    .workloop-toggle-right { display: flex; justify-content: flex-end; margin-top: 4px; margin-bottom: 8px; }
+    .workloop-toggle-right { display: flex; justify-content: flex-end; margin-top: 0; margin-bottom: 2px; }
     .workloop-toggle-right .shiny-input-container { width: auto; margin-bottom: 0; }
     /* Mobile adjustments */
     @media (max-width: 767px) {
@@ -456,7 +456,7 @@ with ui.card():
                 th = "style='padding:8px 14px; border:1px solid #ccc; background:#f0f0f0; font-weight:bold; text-align:center; white-space:nowrap;'"
                 td = "style='padding:8px 14px; border:1px solid #ccc; text-align:center;'"
                 td_left = "style='padding:8px 14px; border:1px solid #ccc; text-align:left; white-space:nowrap;'"
-                html = "<table style='border-collapse:collapse; width:auto; margin-top:1rem;'><thead><tr>"
+                html = "<table style='border-collapse:collapse; width:auto; margin-top:0.25rem;'><thead><tr>"
                 for h in headers:
                     html += f"<th {th}>{h}</th>"
                 html += "</tr></thead><tbody>"
