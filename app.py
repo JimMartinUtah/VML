@@ -238,6 +238,12 @@ ui.tags.style("""
     .shiny-plot-output img { max-width: 100%; height: auto !important; }
     /* Scrollable tables */
     .tbl-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
+    /* Tighten spacing so the figures sit closer to the tab header */
+    .card-body { padding-top: 0.5rem !important; }
+    #combined_graphs { margin-top: -4px; }
+    /* Right-align the Show Workloop toggle below the figures */
+    .workloop-toggle-right { display: flex; justify-content: flex-end; margin-top: 4px; margin-bottom: 8px; }
+    .workloop-toggle-right .shiny-input-container { width: auto; margin-bottom: 0; }
     /* Mobile adjustments */
     @media (max-width: 767px) {
         .app-banner { padding: 8px 12px; }
@@ -302,7 +308,6 @@ with ui.sidebar(open="desktop"):
 with ui.card():
     with ui.navset_bar(title=""):
         with ui.nav_panel(title="Force,Velocity,Power"):
-            ui.input_switch("show_workloop", "Show Workloop", value=False)
             @render.plot
             def combined_graphs():
                 results = run_simulation()
@@ -318,14 +323,14 @@ with ui.card():
                 cycle_pct_theoretical = theoretical_results['sim_data']['cycle_pct']
 
                 if is_mobile:
-                    fig, axes = plt.subplots(4, 1, figsize=(5, 13))
+                    fig, axes = plt.subplots(4, 1, figsize=(5, 15.6))
                     ax_f, ax_v, ax_p, ax_pw = axes
                     legend_kw = dict(fontsize=7, loc='upper right')
                     tick_kw = dict(labelsize=7)
                     xlabel_kw = dict(fontsize=7)
                     title_kw = dict(fontsize=8)
                 else:
-                    fig, axs = plt.subplots(2, 2, figsize=(9, 7))
+                    fig, axs = plt.subplots(2, 2, figsize=(9, 8.4))
                     ax_f, ax_v, ax_p, ax_pw = axs[0,0], axs[0,1], axs[1,0], axs[1,1]
                     legend_kw = dict()
                     tick_kw = dict()
@@ -385,6 +390,9 @@ with ui.card():
 
                 fig.tight_layout()
                 return fig
+
+            with ui.div(class_="workloop-toggle-right"):
+                ui.input_switch("show_workloop", "Show Workloop", value=False)
 
             with ui.panel_conditional("input.show_workloop"):
 
@@ -645,4 +653,4 @@ def optimized_onset_offset():
     for row in rows:
         html += f"<tr><td {td_left}>{row[0]}</td><td {td}>{row[1]}</td></tr>"
     html += "</tbody></table>"
-    return ui.div(ui.HTML(html), class_="tbl-
+    return ui.div(ui.HTML(html), class_="tbl-scroll")
