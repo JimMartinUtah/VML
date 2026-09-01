@@ -352,15 +352,15 @@ with ui.card():
                     title_kw = dict()
 
                 # Force
-                # Colorblind-safe palette (Okabe-Ito) + distinct linestyle per trace so
-                # curves stay distinguishable independent of color perception.
+                # Distinct colors (tuned for readability with limited color vision) + distinct
+                # linestyle per trace so curves stay distinguishable independent of color perception.
                 ax_f.plot(cycle_pct_sim, sim_results['sim_data']['force_total'], label='FV, FL, and FT',
                           color='#0072B2', linestyle='-', linewidth=2)
                 ax_f.plot(cycle_pct_theoretical, theoretical_results['sim_data']['force_total'], label='FV and FL',
-                          color='#E69F00', linestyle='--', linewidth=2)
+                          color='#E41A1C', linestyle='--', linewidth=2)
                 if fv_only_results is not None:
                     ax_f.plot(cycle_pct_fv_only, fv_only_results['sim_data']['force_total'], label='F-V Only',
-                              color='#009E73', linestyle='-.', linewidth=2)
+                              color='#FFC000', linestyle='-.', linewidth=2)
                 if opt_results is not None:
                     ax_f.plot(opt_results['sim_data']['cycle_pct'], opt_results['sim_data']['force_total'], label='Optimized',
                               color='#CC79A7', linestyle=':', linewidth=2)
@@ -391,10 +391,10 @@ with ui.card():
                 ax_pw.plot(cycle_pct_sim, sim_results['sim_data']['power'], label='FV, FL, and FT',
                            color='#0072B2', linestyle='-', linewidth=2)
                 ax_pw.plot(cycle_pct_theoretical, theoretical_results['sim_data']['power'], label='FV and FL',
-                           color='#E69F00', linestyle='--', linewidth=2)
+                           color='#E41A1C', linestyle='--', linewidth=2)
                 if fv_only_results is not None:
                     ax_pw.plot(cycle_pct_fv_only, fv_only_results['sim_data']['power'], label='F-V Only',
-                                color='#009E73', linestyle='-.', linewidth=2)
+                                color='#FFC000', linestyle='-.', linewidth=2)
                 if opt_results is not None:
                     ax_pw.plot(opt_results['sim_data']['cycle_pct'], opt_results['sim_data']['power'], label='Optimized',
                                 color='#CC79A7', linestyle=':', linewidth=2)
