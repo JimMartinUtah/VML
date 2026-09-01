@@ -7,7 +7,7 @@ from shiny import reactive
 from shiny.express import input, output, render, ui, output_args
 
 # Thelen muscle model with full calculations
-def thelen_muscle(onoff, freq, excursion, L0, F0, Vx, af, tau_a, tau_d):
+def thelen_muscle(onoff, freq, excursion, L0, F0, Vx, af, tau_a, tau_d, fl_effect=True):
     try:
         onset = onoff[0] / 100
         offset = onoff[1] / 100
@@ -53,7 +53,11 @@ def thelen_muscle(onoff, freq, excursion, L0, F0, Vx, af, tau_a, tau_d):
         v_norm = v / (V0 * ((Vx / 2) + (Vx / 2) * activation) / Vx)
 
         # Force-Length relationship
-        fl_norm = np.exp(-((muscle_length_norm - 1) ** 2) / k_shape)
+        if fl_effect:
+            fl_norm = np.exp(-((muscle_length_norm - 1) ** 2) / k_shape)
+        else:
+            # Force-length effect disabled: isolate force-velocity (+ activation) only
+            fl_norm = np.ones(len(t))
 
         # Force-Velocity relationship
         fv_norm = np.where(v > (V0 * ((Vx / 2) + (Vx / 2))), 0,
@@ -208,8 +212,14 @@ def run_simulation():
     
     # Calculate theoretical results with zero onset/offset and instantaneous activation/deactivation
     theoretical_results = thelen_muscle(**theoretical_params)
-    
-    return sim_results, theoretical_results, opt_results
+
+    # F-V Only: same instantaneous-activation/optimal-timing setup as Theoretical,
+    # but with the force-length effect disabled so only force-velocity shapes the curve
+    fv_only_params = theoretical_params.copy()
+    fv_only_params['fl_effect'] = False
+    fv_only_results = thelen_muscle(**fv_only_params)
+
+    return sim_results, theoretical_results, opt_results, fv_only_results
 
 # Persistent click position for Graphs2 scrubbing
 _g2_xmax = reactive.Value(None)
@@ -316,6 +326,7 @@ with ui.card():
                 sim_results = results[0]
                 theoretical_results = results[1]
                 opt_results = results[2]
+                fv_only_results = results[3]
                 if sim_results is None or theoretical_results is None:
                     return
 
@@ -323,6 +334,7 @@ with ui.card():
 
                 cycle_pct_sim = sim_results['sim_data']['cycle_pct']
                 cycle_pct_theoretical = theoretical_results['sim_data']['cycle_pct']
+                cycle_pct_fv_only = fv_only_results['sim_data']['cycle_pct'] if fv_only_results is not None else None
 
                 if is_mobile:
                     fig, axes = plt.subplots(4, 1, figsize=(5, 21.996), gridspec_kw={'height_ratios': [1, 1, 1.82, 1.82]})
@@ -342,6 +354,8 @@ with ui.card():
                 # Force
                 ax_f.plot(cycle_pct_sim, sim_results['sim_data']['force_total'], label='Simulated')
                 ax_f.plot(cycle_pct_theoretical, theoretical_results['sim_data']['force_total'], label='Theoretical', linestyle='--')
+                if fv_only_results is not None:
+                    ax_f.plot(cycle_pct_fv_only, fv_only_results['sim_data']['force_total'], label='F-V Only', linestyle='-.', color='gray')
                 if opt_results is not None:
                     ax_f.plot(opt_results['sim_data']['cycle_pct'], opt_results['sim_data']['force_total'], label='Optimized', linestyle=':', color='purple')
                 ax_f.set_title("Force vs. % of Cycle", **title_kw)
@@ -378,6 +392,8 @@ with ui.card():
                 # Power
                 ax_pw.plot(cycle_pct_sim, sim_results['sim_data']['power'], color="red", label='Simulated')
                 ax_pw.plot(cycle_pct_theoretical, theoretical_results['sim_data']['power'], color="lightcoral", linestyle='--', label='Theoretical')
+                if fv_only_results is not None:
+                    ax_pw.plot(cycle_pct_fv_only, fv_only_results['sim_data']['power'], label='F-V Only', linestyle='-.', color='gray')
                 if opt_results is not None:
                     ax_pw.plot(opt_results['sim_data']['cycle_pct'], opt_results['sim_data']['power'], label='Optimized', linestyle=':', color='purple')
                 ax_pw.set_title("Power vs. % of Cycle", **title_kw)
