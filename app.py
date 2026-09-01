@@ -533,7 +533,7 @@ with ui.card():
                     ax.xaxis.set_major_formatter(FuncFormatter(lambda x, _: f"{x:.0f}"))
                     ax.set_xticks([0, 25, 50, 75, 100, 125])
                     ax.set_ylabel("Force (N)")
-                    ax.yaxis.set_major_formatter(FuncFormatter(lambda y, _: f"{y:10.3g}"))
+                    ax.yaxis.set_major_formatter(FuncFormatter(lambda y, _: f"{y:.0f}"))
                     fig.subplots_adjust(left=0.16, right=0.99, bottom=0.24, top=0.98)
                     return fig
 
@@ -641,7 +641,7 @@ with ui.card():
                     ax.set_ylim(full_force.min() - force_margin, full_force.max() + force_margin)
                     ax.set_xlabel("Excursion (mm)")
                     ax.set_ylabel("Force (N)")
-                    ax.yaxis.set_major_formatter(FuncFormatter(lambda y, _: f"{y:10.3g}"))
+                    ax.yaxis.set_major_formatter(FuncFormatter(lambda y, _: f"{y:.0f}"))
                     fig.subplots_adjust(left=0.16, right=0.99, bottom=0.16, top=0.98)
                     return fig
 
