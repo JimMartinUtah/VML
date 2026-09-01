@@ -395,6 +395,7 @@ with ui.card():
 
                 for ax in [ax_f, ax_v, ax_p, ax_pw]:
                     ax.xaxis.set_major_formatter(FuncFormatter(lambda x, _: f"{x:.0f}"))
+                    ax.set_xticks([0, 25, 50, 75, 100, 125])
 
                 fig.tight_layout()
                 return fig
@@ -446,29 +447,29 @@ with ui.card():
                 if sim is None or theo is None:
                     return ui.p("No results available")
                 opt_col = [
-                    round(opt['work_actual'], 4),
-                    round(opt['work_positive'], 4),
-                    round(opt['work_negative'], 4),
-                    round(opt['power_actual'], 4),
-                    round(opt['power_positive'], 4),
-                    round(opt['power_negative'], 4),
+                    round(opt['work_actual'], 1),
+                    round(opt['work_positive'], 1),
+                    round(opt['work_negative'], 1),
+                    round(opt['power_actual'], 1),
+                    round(opt['power_positive'], 1),
+                    round(opt['power_negative'], 1),
                 ] if opt is not None else ["\u2014", "\u2014", "\u2014", "\u2014", "\u2014", "\u2014"]
                 fv_col = [
-                    round(fv['work_actual'], 4),
-                    round(fv['work_positive'], 4),
-                    round(fv['work_negative'], 4),
-                    round(fv['power_actual'], 4),
-                    round(fv['power_positive'], 4),
-                    round(fv['power_negative'], 4),
+                    round(fv['work_actual'], 1),
+                    round(fv['work_positive'], 1),
+                    round(fv['work_negative'], 1),
+                    round(fv['power_actual'], 1),
+                    round(fv['power_positive'], 1),
+                    round(fv['power_negative'], 1),
                 ] if fv is not None else ["\u2014", "\u2014", "\u2014", "\u2014", "\u2014", "\u2014"]
                 headers = ["Metric", "FV, FL, and FT", "FV and FL", "F-V Only", "Optimized"]
                 rows = [
-                    ["Total Work (J)",     round(sim['work_actual'], 4),    round(theo['work_actual'], 4),    fv_col[0], opt_col[0]],
-                    ["Positive Work (J)",  round(sim['work_positive'], 4),  round(theo['work_positive'], 4),  fv_col[1], opt_col[1]],
-                    ["Negative Work (J)",  round(sim['work_negative'], 4),  round(theo['work_negative'], 4),  fv_col[2], opt_col[2]],
-                    ["Mean Power (W)",     round(sim['power_actual'], 4),   round(theo['power_actual'], 4),   fv_col[3], opt_col[3]],
-                    ["Positive Power (W)", round(sim['power_positive'], 4), round(theo['power_positive'], 4), fv_col[4], opt_col[4]],
-                    ["Negative Power (W)", round(sim['power_negative'], 4), round(theo['power_negative'], 4), fv_col[5], opt_col[5]],
+                    ["Total Work (J)",     round(sim['work_actual'], 1),    round(theo['work_actual'], 1),    fv_col[0], opt_col[0]],
+                    ["Positive Work (J)",  round(sim['work_positive'], 1),  round(theo['work_positive'], 1),  fv_col[1], opt_col[1]],
+                    ["Negative Work (J)",  round(sim['work_negative'], 1),  round(theo['work_negative'], 1),  fv_col[2], opt_col[2]],
+                    ["Mean Power (W)",     round(sim['power_actual'], 1),   round(theo['power_actual'], 1),   fv_col[3], opt_col[3]],
+                    ["Positive Power (W)", round(sim['power_positive'], 1), round(theo['power_positive'], 1), fv_col[4], opt_col[4]],
+                    ["Negative Power (W)", round(sim['power_negative'], 1), round(theo['power_negative'], 1), fv_col[5], opt_col[5]],
                 ]
                 th = "style='padding:8px 14px; border:1px solid #ccc; background:#f0f0f0; font-weight:bold; text-align:center; white-space:nowrap;'"
                 td = "style='padding:8px 14px; border:1px solid #ccc; text-align:center;'"
