@@ -523,8 +523,8 @@ with ui.card():
                         theo_mask = np.ones(len(theo_data), dtype=bool)
 
                     fig, ax = plt.subplots(figsize=(8, 0.75))
-                    ax.plot(sim_data['cycle_pct'][sim_mask], sim_data['force_total'][sim_mask], label='Simulated', color='blue')
-                    ax.plot(theo_data['cycle_pct'][theo_mask], theo_data['force_total'][theo_mask], label='Theoretical', color='orange', linestyle='--')
+                    ax.plot(sim_data['cycle_pct'][sim_mask], sim_data['force_total'][sim_mask], label='FV, FL, and FT', color='blue')
+                    ax.plot(theo_data['cycle_pct'][theo_mask], theo_data['force_total'][theo_mask], label='FV and FL', color='orange', linestyle='--')
                     if opt_results is not None:
                         opt_data = opt_results['sim_data']
                         opt_mask = opt_data['cycle_pct'].values <= xmax if xmax is not None else np.ones(len(opt_data), dtype=bool)
@@ -534,6 +534,7 @@ with ui.card():
                     ax.set_xticks([0, 25, 50, 75, 100, 125])
                     ax.set_ylabel("Force (N)")
                     ax.yaxis.set_major_formatter(FuncFormatter(lambda y, _: f"{y:.0f}"))
+                    ax.legend(fontsize=6, loc='upper right', frameon=False)
                     fig.subplots_adjust(left=0.16, right=0.99, bottom=0.24, top=0.98)
                     return fig
 
@@ -598,8 +599,8 @@ with ui.card():
                     force_margin = (full_force.max() - full_force.min()) * 0.05
 
                     fig, ax = plt.subplots(figsize=(8, 3.5))
-                    ax.plot(sim_data['position_mm'][sim_mask], sim_data['force_total'][sim_mask], label='Simulated', color='blue')
-                    ax.plot(theo_data['position_mm'][theo_mask], theo_data['force_total'][theo_mask], label='Theoretical', color='orange', linestyle='--')
+                    ax.plot(sim_data['position_mm'][sim_mask], sim_data['force_total'][sim_mask], label='FV, FL, and FT', color='blue')
+                    ax.plot(theo_data['position_mm'][theo_mask], theo_data['force_total'][theo_mask], label='FV and FL', color='orange', linestyle='--')
                     if opt_results is not None:
                         opt_data = opt_results['sim_data']
                         opt_mask = opt_data['cycle_pct'].values <= xmax if xmax is not None else np.ones(len(opt_data), dtype=bool)
@@ -642,6 +643,7 @@ with ui.card():
                     ax.set_xlabel("Excursion (mm)")
                     ax.set_ylabel("Force (N)")
                     ax.yaxis.set_major_formatter(FuncFormatter(lambda y, _: f"{y:.0f}"))
+                    ax.legend(fontsize=8, loc='upper right', frameon=False)
                     fig.subplots_adjust(left=0.16, right=0.99, bottom=0.16, top=0.98)
                     return fig
 
