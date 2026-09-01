@@ -366,28 +366,18 @@ with ui.card():
                 ax_f.legend(**legend_kw)
 
                 # Velocity
-                ax_v.plot(cycle_pct_sim, sim_results['sim_data']['velocity'], color="green", label='Simulated')
-                ax_v.plot(cycle_pct_theoretical, theoretical_results['sim_data']['velocity'], color="lightgreen", linestyle='--', label='Theoretical')
-                if opt_results is not None:
-                    ax_v.plot(opt_results['sim_data']['cycle_pct'], opt_results['sim_data']['velocity'], label='Optimized', linestyle=':', color='purple')
-                ax_v.set_title("Velocity vs. % of Cycle", **title_kw)
+                ax_v.plot(cycle_pct_sim, sim_results['sim_data']['velocity'], color="green")
                 ax_v.set_xlabel("% of Cycle", **xlabel_kw)
                 if not is_mobile:
                     ax_v.set_ylabel("Velocity (m/s)")
                 ax_v.tick_params(**tick_kw)
-                ax_v.legend(**legend_kw)
 
                 # Position
-                ax_p.plot(cycle_pct_sim, sim_results['sim_data']['position_mm'], color="orange", label='Simulated')
-                ax_p.plot(cycle_pct_theoretical, theoretical_results['sim_data']['position_mm'], color="darkorange", linestyle='--', label='Theoretical')
-                if opt_results is not None:
-                    ax_p.plot(opt_results['sim_data']['cycle_pct'], opt_results['sim_data']['position_mm'], label='Optimized', linestyle=':', color='purple')
-                ax_p.set_title("Position vs. % of Cycle", **title_kw)
+                ax_p.plot(cycle_pct_sim, sim_results['sim_data']['position_mm'], color="orange")
                 ax_p.set_xlabel("% of Cycle", **xlabel_kw)
                 if not is_mobile:
                     ax_p.set_ylabel("Position (mm)")
                 ax_p.tick_params(**tick_kw)
-                ax_p.legend(**legend_kw)
 
                 # Power
                 ax_pw.plot(cycle_pct_sim, sim_results['sim_data']['power'], color="red", label='FV, FL, and FT')
@@ -452,6 +442,7 @@ with ui.card():
                 sim = r[0]
                 theo = r[1]
                 opt = r[2]
+                fv = r[3]
                 if sim is None or theo is None:
                     return ui.p("No results available")
                 opt_col = [
@@ -462,14 +453,22 @@ with ui.card():
                     round(opt['power_positive'], 4),
                     round(opt['power_negative'], 4),
                 ] if opt is not None else ["\u2014", "\u2014", "\u2014", "\u2014", "\u2014", "\u2014"]
-                headers = ["Metric", "Simulated", "Theoretical", "Optimized"]
+                fv_col = [
+                    round(fv['work_actual'], 4),
+                    round(fv['work_positive'], 4),
+                    round(fv['work_negative'], 4),
+                    round(fv['power_actual'], 4),
+                    round(fv['power_positive'], 4),
+                    round(fv['power_negative'], 4),
+                ] if fv is not None else ["\u2014", "\u2014", "\u2014", "\u2014", "\u2014", "\u2014"]
+                headers = ["Metric", "FV, FL, and FT", "FV and FL", "F-V Only", "Optimized"]
                 rows = [
-                    ["Total Work (J)",     round(sim['work_actual'], 4),    round(theo['work_actual'], 4),    opt_col[0]],
-                    ["Positive Work (J)",  round(sim['work_positive'], 4),  round(theo['work_positive'], 4),  opt_col[1]],
-                    ["Negative Work (J)",  round(sim['work_negative'], 4),  round(theo['work_negative'], 4),  opt_col[2]],
-                    ["Mean Power (W)",     round(sim['power_actual'], 4),   round(theo['power_actual'], 4),   opt_col[3]],
-                    ["Positive Power (W)", round(sim['power_positive'], 4), round(theo['power_positive'], 4), opt_col[4]],
-                    ["Negative Power (W)", round(sim['power_negative'], 4), round(theo['power_negative'], 4), opt_col[5]],
+                    ["Total Work (J)",     round(sim['work_actual'], 4),    round(theo['work_actual'], 4),    fv_col[0], opt_col[0]],
+                    ["Positive Work (J)",  round(sim['work_positive'], 4),  round(theo['work_positive'], 4),  fv_col[1], opt_col[1]],
+                    ["Negative Work (J)",  round(sim['work_negative'], 4),  round(theo['work_negative'], 4),  fv_col[2], opt_col[2]],
+                    ["Mean Power (W)",     round(sim['power_actual'], 4),   round(theo['power_actual'], 4),   fv_col[3], opt_col[3]],
+                    ["Positive Power (W)", round(sim['power_positive'], 4), round(theo['power_positive'], 4), fv_col[4], opt_col[4]],
+                    ["Negative Power (W)", round(sim['power_negative'], 4), round(theo['power_negative'], 4), fv_col[5], opt_col[5]],
                 ]
                 th = "style='padding:8px 14px; border:1px solid #ccc; background:#f0f0f0; font-weight:bold; text-align:center; white-space:nowrap;'"
                 td = "style='padding:8px 14px; border:1px solid #ccc; text-align:center;'"
