@@ -352,18 +352,18 @@ with ui.card():
                     title_kw = dict()
 
                 # Force
-                # Colorblind-safe palette (Okabe-Ito) + distinct linestyle/marker per trace so
+                # Colorblind-safe palette (Okabe-Ito) + distinct linestyle per trace so
                 # curves stay distinguishable independent of color perception.
                 ax_f.plot(cycle_pct_sim, sim_results['sim_data']['force_total'], label='FV, FL, and FT',
-                          color='#0072B2', linestyle='-', linewidth=2, marker='o', markevery=0.12, markersize=5)
+                          color='#0072B2', linestyle='-', linewidth=2)
                 ax_f.plot(cycle_pct_theoretical, theoretical_results['sim_data']['force_total'], label='FV and FL',
-                          color='#E69F00', linestyle='--', linewidth=2, marker='s', markevery=0.12, markersize=5)
+                          color='#E69F00', linestyle='--', linewidth=2)
                 if fv_only_results is not None:
                     ax_f.plot(cycle_pct_fv_only, fv_only_results['sim_data']['force_total'], label='F-V Only',
-                              color='#009E73', linestyle='-.', linewidth=2, marker='^', markevery=0.12, markersize=5)
+                              color='#009E73', linestyle='-.', linewidth=2)
                 if opt_results is not None:
                     ax_f.plot(opt_results['sim_data']['cycle_pct'], opt_results['sim_data']['force_total'], label='Optimized',
-                              color='#CC79A7', linestyle=':', linewidth=2, marker='D', markevery=0.12, markersize=5)
+                              color='#CC79A7', linestyle=':', linewidth=2)
                 ax_f.set_title("Force vs. % of Cycle", **title_kw)
                 ax_f.set_xlabel("% of Cycle", **xlabel_kw)
                 if not is_mobile:
@@ -386,18 +386,18 @@ with ui.card():
                 ax_p.tick_params(**tick_kw)
 
                 # Power
-                # Same colorblind-safe palette/linestyle/marker scheme as the Force plot above,
+                # Same colorblind-safe palette/linestyle scheme as the Force plot above,
                 # so a given trace looks identical (and stays identifiable) across both figures.
                 ax_pw.plot(cycle_pct_sim, sim_results['sim_data']['power'], label='FV, FL, and FT',
-                           color='#0072B2', linestyle='-', linewidth=2, marker='o', markevery=0.12, markersize=5)
+                           color='#0072B2', linestyle='-', linewidth=2)
                 ax_pw.plot(cycle_pct_theoretical, theoretical_results['sim_data']['power'], label='FV and FL',
-                           color='#E69F00', linestyle='--', linewidth=2, marker='s', markevery=0.12, markersize=5)
+                           color='#E69F00', linestyle='--', linewidth=2)
                 if fv_only_results is not None:
                     ax_pw.plot(cycle_pct_fv_only, fv_only_results['sim_data']['power'], label='F-V Only',
-                                color='#009E73', linestyle='-.', linewidth=2, marker='^', markevery=0.12, markersize=5)
+                                color='#009E73', linestyle='-.', linewidth=2)
                 if opt_results is not None:
                     ax_pw.plot(opt_results['sim_data']['cycle_pct'], opt_results['sim_data']['power'], label='Optimized',
-                                color='#CC79A7', linestyle=':', linewidth=2, marker='D', markevery=0.12, markersize=5)
+                                color='#CC79A7', linestyle=':', linewidth=2)
                 ax_pw.set_title("Power vs. % of Cycle", **title_kw)
                 ax_pw.set_xlabel("% of Cycle", **xlabel_kw)
                 if not is_mobile:
