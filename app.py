@@ -352,8 +352,8 @@ with ui.card():
                     title_kw = dict()
 
                 # Force
-                ax_f.plot(cycle_pct_sim, sim_results['sim_data']['force_total'], label='Simulated')
-                ax_f.plot(cycle_pct_theoretical, theoretical_results['sim_data']['force_total'], label='Theoretical', linestyle='--')
+                ax_f.plot(cycle_pct_sim, sim_results['sim_data']['force_total'], label='FV, FL, and FT')
+                ax_f.plot(cycle_pct_theoretical, theoretical_results['sim_data']['force_total'], label='FV and FL', linestyle='--')
                 if fv_only_results is not None:
                     ax_f.plot(cycle_pct_fv_only, fv_only_results['sim_data']['force_total'], label='F-V Only', linestyle='-.', color='gray')
                 if opt_results is not None:
@@ -390,8 +390,8 @@ with ui.card():
                 ax_p.legend(**legend_kw)
 
                 # Power
-                ax_pw.plot(cycle_pct_sim, sim_results['sim_data']['power'], color="red", label='Simulated')
-                ax_pw.plot(cycle_pct_theoretical, theoretical_results['sim_data']['power'], color="lightcoral", linestyle='--', label='Theoretical')
+                ax_pw.plot(cycle_pct_sim, sim_results['sim_data']['power'], color="red", label='FV, FL, and FT')
+                ax_pw.plot(cycle_pct_theoretical, theoretical_results['sim_data']['power'], color="lightcoral", linestyle='--', label='FV and FL')
                 if fv_only_results is not None:
                     ax_pw.plot(cycle_pct_fv_only, fv_only_results['sim_data']['power'], label='F-V Only', linestyle='-.', color='gray')
                 if opt_results is not None:
