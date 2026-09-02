@@ -437,8 +437,8 @@ with ui.card():
                     position_theoretical = theoretical_results['sim_data']['position_mm']
 
                     # Plot force vs. position (excursion)
-                    ax.plot(position_sim, force_total_sim, label="Simulated Work Loop")
-                    ax.plot(position_theoretical, force_total_theoretical, label="Theoretical Work Loop", linestyle='--')
+                    ax.plot(position_sim, force_total_sim, label="FV, FL, and FT")
+                    ax.plot(position_theoretical, force_total_theoretical, label="FV and FL", linestyle='--')
                     if opt_results is not None:
                         ax.plot(opt_results['sim_data']['position_mm'], opt_results['sim_data']['force_total'], label="Optimized Work Loop", linestyle=':', color='purple')
 
