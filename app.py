@@ -108,6 +108,20 @@ def thelen_muscle(onoff, freq, excursion, L0, F0, Vx, af, tau_a, tau_d, fl_effec
         print(f"Error in thelen_muscle: {e}")
         return None
 
+# Underlying Force-Velocity / Power-Velocity relationship, evaluated at optimal muscle
+# length (fl_norm = 1) and full activation, independent of the time-domain simulation.
+# Positive velocity = shortening (concentric), negative velocity = lengthening (eccentric),
+# matching the sign convention used in thelen_muscle above.
+def force_velocity_relationship(F0, Vx, L0, af, n_points=300):
+    V0 = Vx * L0
+    v = np.linspace(-V0, V0, n_points)
+    v_norm = v / V0
+    fv_norm = np.where(v_norm > 0, (1 - v_norm) / (1 + v_norm / af),
+                        (1.8 - (0.8 * (1 + v / V0)) / (1 - 7.56 * 0.21 * v / V0)))
+    force = F0 * fv_norm
+    power = force * v
+    return v, force, power
+
 # Optimization function: coordinate descent (alternates onset/offset until convergence)
 # Uses work_actual (net work over full cycle) as objective to avoid the variable-window
 # bias in power_actual, which unfairly favours later onset values.
@@ -661,6 +675,48 @@ with ui.card():
 
             ui.p(
                 "Click on the Force graph to reveal data up to that point on all plots.",
+                style="color:#666; font-size:0.85em; margin-top:4px; margin-bottom:0;",
+            )
+
+        with ui.nav_panel(title="Force-Velocity"):
+
+            @render.plot
+            def force_velocity_relationship_plot():
+                results = run_simulation()
+                sim_results = results[0]
+                if sim_results is None:
+                    return
+
+                v_curve, force_curve, power_curve = force_velocity_relationship(
+                    input.max_isometric_force(), input.max_velocity(),
+                    input.length_optimal(), input.force_velocity_curvature()
+                )
+
+                # Velocity range actually traversed during the current simulated cycle
+                sim_velocity = sim_results['sim_data']['velocity']
+                v_min, v_max = float(sim_velocity.min()), float(sim_velocity.max())
+
+                fig, (ax_fv, ax_pv) = plt.subplots(1, 2, figsize=(10, 4))
+
+                ax_fv.axvspan(v_min, v_max, color='lightgray', alpha=0.6, zorder=0)
+                ax_fv.plot(v_curve, force_curve, color='black', linewidth=2, zorder=1)
+                ax_fv.set_title("Force vs. Velocity")
+                ax_fv.set_xlabel("Velocity (m/s)")
+                ax_fv.set_ylabel("Force (N)")
+
+                ax_pv.axvspan(v_min, v_max, color='lightgray', alpha=0.6, zorder=0)
+                ax_pv.plot(v_curve, power_curve, color='black', linewidth=2, zorder=1)
+                ax_pv.set_title("Power vs. Velocity")
+                ax_pv.set_xlabel("Velocity (m/s)")
+                ax_pv.set_ylabel("Power (W)")
+
+                fig.tight_layout()
+                return fig
+
+            ui.p(
+                "The shaded band shows the range of velocities reached during the current "
+                "simulated cycle. Curves show the underlying force-velocity and power-velocity "
+                "relationship at optimal length and full activation.",
                 style="color:#666; font-size:0.85em; margin-top:4px; margin-bottom:0;",
             )
 
