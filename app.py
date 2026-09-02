@@ -431,37 +431,39 @@ with ui.card():
 
             with ui.panel_conditional("input.show_workloop"):
 
-                @render.plot
-                def work_loop1():
-                    results = run_simulation()
-                    sim_results = results[0]
-                    theoretical_results = results[1]
-                    opt_results = results[2]
-                    if sim_results is None or theoretical_results is None:
-                        print("Simulation failed: one or both result sets are None")
-                        return
+                with ui.div(style="width:75%; margin: 0 auto;"):
 
-                    fig, ax = plt.subplots()
+                    @render.plot
+                    def work_loop1():
+                        results = run_simulation()
+                        sim_results = results[0]
+                        theoretical_results = results[1]
+                        opt_results = results[2]
+                        if sim_results is None or theoretical_results is None:
+                            print("Simulation failed: one or both result sets are None")
+                            return
 
-                    # Extract force and position data for the work-loop graph
-                    force_total_sim = sim_results['sim_data']['force_total']
-                    position_sim = sim_results['sim_data']['position_mm']
+                        fig, ax = plt.subplots()
 
-                    force_total_theoretical = theoretical_results['sim_data']['force_total']
-                    position_theoretical = theoretical_results['sim_data']['position_mm']
+                        # Extract force and position data for the work-loop graph
+                        force_total_sim = sim_results['sim_data']['force_total']
+                        position_sim = sim_results['sim_data']['position_mm']
 
-                    # Plot force vs. position (excursion)
-                    ax.plot(position_sim, force_total_sim, label="FV, FL, and FT")
-                    ax.plot(position_theoretical, force_total_theoretical, label="FV and FL", linestyle='--')
-                    if opt_results is not None:
-                        ax.plot(opt_results['sim_data']['position_mm'], opt_results['sim_data']['force_total'], label="Optimized Work Loop", linestyle=':', color='purple')
+                        force_total_theoretical = theoretical_results['sim_data']['force_total']
+                        position_theoretical = theoretical_results['sim_data']['position_mm']
 
-                    ax.set_title("Work Loop (Force vs. Excursion)")
-                    ax.set_xlabel("Excursion (mm)")
-                    ax.set_ylabel("Force (N)")
-                    ax.legend()
+                        # Plot force vs. position (excursion)
+                        ax.plot(position_sim, force_total_sim, label="FV, FL, and FT")
+                        ax.plot(position_theoretical, force_total_theoretical, label="FV and FL", linestyle='--')
+                        if opt_results is not None:
+                            ax.plot(opt_results['sim_data']['position_mm'], opt_results['sim_data']['force_total'], label="Optimized Work Loop", linestyle=':', color='purple')
 
-                    return fig
+                        ax.set_title("Work Loop (Force vs. Excursion)")
+                        ax.set_xlabel("Excursion (mm)")
+                        ax.set_ylabel("Force (N)")
+                        ax.legend()
+
+                        return fig
 
             @render.ui
             def workloop_metrics():
