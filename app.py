@@ -709,6 +709,7 @@ with ui.card():
                 ax_pv.set_title("Power vs. Velocity")
                 ax_pv.set_xlabel("Velocity (m/s)")
                 ax_pv.set_ylabel("Power (W)")
+                ax_pv.set_ylim(bottom=0)
 
                 fig.tight_layout()
                 return fig
