@@ -710,6 +710,7 @@ with ui.card():
                 ax_pv.set_xlabel("Velocity (m/s)")
                 ax_pv.set_ylabel("Power (W)")
                 ax_pv.set_ylim(bottom=0, top=float(power_curve.max()) * 1.05)
+                ax_pv.set_xlim(left=0)
 
                 fig.tight_layout()
                 return fig
