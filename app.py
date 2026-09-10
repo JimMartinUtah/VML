@@ -481,7 +481,7 @@ with ui.card():
                     round(opt['power_actual'], 1),
                     round(opt['power_positive'], 1),
                     round(opt['power_negative'], 1),
-                ] if opt is not None else ["\u2014", "\u2014", "\u2014", "\u2014", "\u2014", "\u2014"]
+                ] if opt is not None else None
                 fv_col = [
                     round(fv['work_actual'], 1),
                     round(fv['work_positive'], 1),
@@ -490,15 +490,20 @@ with ui.card():
                     round(fv['power_positive'], 1),
                     round(fv['power_negative'], 1),
                 ] if fv is not None else ["\u2014", "\u2014", "\u2014", "\u2014", "\u2014", "\u2014"]
-                headers = ["Metric", "FV, FL, and FT", "FV and FL", "F-V Only", "Optimized"]
+                headers = ["Metric", "FV, FL, and FT", "FV and FL", "F-V Only"]
                 rows = [
-                    ["Total Work (J)",     round(sim['work_actual'], 1),    round(theo['work_actual'], 1),    fv_col[0], opt_col[0]],
-                    ["Positive Work (J)",  round(sim['work_positive'], 1),  round(theo['work_positive'], 1),  fv_col[1], opt_col[1]],
-                    ["Negative Work (J)",  round(sim['work_negative'], 1),  round(theo['work_negative'], 1),  fv_col[2], opt_col[2]],
-                    ["Mean Power (W)",     round(sim['power_actual'], 1),   round(theo['power_actual'], 1),   fv_col[3], opt_col[3]],
-                    ["Positive Power (W)", round(sim['power_positive'], 1), round(theo['power_positive'], 1), fv_col[4], opt_col[4]],
-                    ["Negative Power (W)", round(sim['power_negative'], 1), round(theo['power_negative'], 1), fv_col[5], opt_col[5]],
+                    ["Total Work (J)",     round(sim['work_actual'], 1),    round(theo['work_actual'], 1),    fv_col[0]],
+                    ["Positive Work (J)",  round(sim['work_positive'], 1),  round(theo['work_positive'], 1),  fv_col[1]],
+                    ["Negative Work (J)",  round(sim['work_negative'], 1),  round(theo['work_negative'], 1),  fv_col[2]],
+                    ["Mean Power (W)",     round(sim['power_actual'], 1),   round(theo['power_actual'], 1),   fv_col[3]],
+                    ["Positive Power (W)", round(sim['power_positive'], 1), round(theo['power_positive'], 1), fv_col[4]],
+                    ["Negative Power (W)", round(sim['power_negative'], 1), round(theo['power_negative'], 1), fv_col[5]],
                 ]
+                # Only show the "Optimized" column when the optimize checkbox is checked
+                if opt_col is not None:
+                    headers.append("Optimized")
+                    for row, val in zip(rows, opt_col):
+                        row.append(val)
                 th = "style='padding:8px 14px; border:1px solid #ccc; background:#f0f0f0; font-weight:bold; text-align:center; white-space:nowrap;'"
                 td = "style='padding:8px 14px; border:1px solid #ccc; text-align:center;'"
                 td_left = "style='padding:8px 14px; border:1px solid #ccc; text-align:left; white-space:nowrap;'"
