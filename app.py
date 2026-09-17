@@ -290,7 +290,11 @@ ui.tags.style("""
     .card-body { padding-top: 0.5rem !important; }
     #combined_graphs { margin-top: -4px; }
     /* Right-align the Show Workloop toggle below the figures */
-    .workloop-toggle-right { display: flex; justify-content: flex-end; align-items: center; gap: 18px; margin-top: 0; margin-bottom: 2px; }
+    /* Row that holds the metrics table (left) and the toggles (right), top-aligned
+       so the table's top edge lines up with the top of the toggle switches. */
+    .workloop-row { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; margin-top: 4px; }
+    .metrics-table-wrap { flex: 1 1 auto; min-width: 0; }
+    .workloop-toggle-right { display: flex; justify-content: flex-end; align-items: center; gap: 18px; margin-top: 0; margin-bottom: 2px; flex: 0 0 auto; }
     .workloop-toggle-right .shiny-input-container { width: auto; margin-bottom: 0; }
     /* Reduce the left-hand sidebar font size by 1 point (default is 12pt) */
     .bslib-sidebar-layout > .sidebar, .bslib-sidebar-layout .sidebar-content { font-size: 12pt; }
@@ -302,6 +306,10 @@ ui.tags.style("""
         .shiny-input-container { width: 100% !important; }
         .irs--shiny .irs-line, .irs--shiny .irs-bar { width: 100% !important; }
         .nav-item a { padding: 6px 10px !important; font-size: 0.9em; }
+        /* Stack the metrics table above the toggles on narrow screens instead of
+           squeezing them side by side. */
+        .workloop-row { flex-direction: column; align-items: stretch; }
+        .workloop-toggle-right { justify-content: flex-start; }
     }
 """)
 ui.tags.script("""
@@ -455,9 +463,67 @@ with ui.card():
                 fig.tight_layout()
                 return fig
 
-            with ui.div(class_="workloop-toggle-right"):
-                ui.input_switch("show_ecc_con", "Show Eccentric/Concentric Labels", value=False)
-                ui.input_switch("show_workloop", "Show Workloop", value=False)
+            with ui.div(class_="workloop-row"):
+                with ui.div(class_="metrics-table-wrap"):
+
+                    @render.ui
+                    def workloop_metrics():
+                        r = run_simulation()
+                        sim = r[0]
+                        theo = r[1]
+                        opt = r[2]
+                        fv = r[3]
+                        if sim is None or theo is None:
+                            return ui.p("No results available")
+                        opt_col = [
+                            round(opt['work_actual'], 1),
+                            round(opt['work_positive'], 1),
+                            round(opt['work_negative'], 1),
+                            round(opt['power_actual'], 1),
+                            round(opt['power_positive'], 1),
+                            round(opt['power_negative'], 1),
+                        ] if opt is not None else None
+                        fv_col = [
+                            round(fv['work_actual'], 1),
+                            round(fv['work_positive'], 1),
+                            round(fv['work_negative'], 1),
+                            round(fv['power_actual'], 1),
+                            round(fv['power_positive'], 1),
+                            round(fv['power_negative'], 1),
+                        ] if fv is not None else ["\u2014", "\u2014", "\u2014", "\u2014", "\u2014", "\u2014"]
+                        headers = ["Metric", "FV, FL, and FT", "FV and FL", "F-V Only"]
+                        rows = [
+                            ["Total Work (J)",     round(sim['work_actual'], 1),    round(theo['work_actual'], 1),    fv_col[0]],
+                            ["Positive Work (J)",  round(sim['work_positive'], 1),  round(theo['work_positive'], 1),  fv_col[1]],
+                            ["Negative Work (J)",  round(sim['work_negative'], 1),  round(theo['work_negative'], 1),  fv_col[2]],
+                            ["Mean Power (W)",     round(sim['power_actual'], 1),   round(theo['power_actual'], 1),   fv_col[3]],
+                            ["Positive Power (W)", round(sim['power_positive'], 1), round(theo['power_positive'], 1), fv_col[4]],
+                            ["Negative Power (W)", round(sim['power_negative'], 1), round(theo['power_negative'], 1), fv_col[5]],
+                        ]
+                        # Only show the "Optimized" column when the optimize checkbox is checked
+                        if opt_col is not None:
+                            headers.append("Optimized")
+                            for row, val in zip(rows, opt_col):
+                                row.append(val)
+                        th = "style='padding:8px 14px; border:1px solid #ccc; background:#f0f0f0; font-weight:bold; text-align:center; white-space:nowrap;'"
+                        td = "style='padding:8px 14px; border:1px solid #ccc; text-align:center;'"
+                        td_left = "style='padding:8px 14px; border:1px solid #ccc; text-align:left; white-space:nowrap;'"
+                        html = "<table style='border-collapse:collapse; width:auto; margin-top:0.25rem;'><thead><tr>"
+                        for h in headers:
+                            html += f"<th {th}>{h}</th>"
+                        html += "</tr></thead><tbody>"
+                        for row in rows:
+                            html += "<tr>"
+                            html += f"<td {td_left}>{row[0]}</td>"
+                            for cell in row[1:]:
+                                html += f"<td {td}>{cell}</td>"
+                            html += "</tr>"
+                        html += "</tbody></table>"
+                        return ui.div(ui.HTML(html), class_="tbl-scroll")
+
+                with ui.div(class_="workloop-toggle-right"):
+                    ui.input_switch("show_ecc_con", "Show Eccentric/Concentric Labels", value=False)
+                    ui.input_switch("show_workloop", "Show Workloop", value=False)
 
             with ui.panel_conditional("input.show_workloop"):
 
@@ -494,61 +560,6 @@ with ui.card():
                         ax.legend()
 
                         return fig
-
-            @render.ui
-            def workloop_metrics():
-                r = run_simulation()
-                sim = r[0]
-                theo = r[1]
-                opt = r[2]
-                fv = r[3]
-                if sim is None or theo is None:
-                    return ui.p("No results available")
-                opt_col = [
-                    round(opt['work_actual'], 1),
-                    round(opt['work_positive'], 1),
-                    round(opt['work_negative'], 1),
-                    round(opt['power_actual'], 1),
-                    round(opt['power_positive'], 1),
-                    round(opt['power_negative'], 1),
-                ] if opt is not None else None
-                fv_col = [
-                    round(fv['work_actual'], 1),
-                    round(fv['work_positive'], 1),
-                    round(fv['work_negative'], 1),
-                    round(fv['power_actual'], 1),
-                    round(fv['power_positive'], 1),
-                    round(fv['power_negative'], 1),
-                ] if fv is not None else ["\u2014", "\u2014", "\u2014", "\u2014", "\u2014", "\u2014"]
-                headers = ["Metric", "FV, FL, and FT", "FV and FL", "F-V Only"]
-                rows = [
-                    ["Total Work (J)",     round(sim['work_actual'], 1),    round(theo['work_actual'], 1),    fv_col[0]],
-                    ["Positive Work (J)",  round(sim['work_positive'], 1),  round(theo['work_positive'], 1),  fv_col[1]],
-                    ["Negative Work (J)",  round(sim['work_negative'], 1),  round(theo['work_negative'], 1),  fv_col[2]],
-                    ["Mean Power (W)",     round(sim['power_actual'], 1),   round(theo['power_actual'], 1),   fv_col[3]],
-                    ["Positive Power (W)", round(sim['power_positive'], 1), round(theo['power_positive'], 1), fv_col[4]],
-                    ["Negative Power (W)", round(sim['power_negative'], 1), round(theo['power_negative'], 1), fv_col[5]],
-                ]
-                # Only show the "Optimized" column when the optimize checkbox is checked
-                if opt_col is not None:
-                    headers.append("Optimized")
-                    for row, val in zip(rows, opt_col):
-                        row.append(val)
-                th = "style='padding:8px 14px; border:1px solid #ccc; background:#f0f0f0; font-weight:bold; text-align:center; white-space:nowrap;'"
-                td = "style='padding:8px 14px; border:1px solid #ccc; text-align:center;'"
-                td_left = "style='padding:8px 14px; border:1px solid #ccc; text-align:left; white-space:nowrap;'"
-                html = "<table style='border-collapse:collapse; width:auto; margin-top:0.25rem;'><thead><tr>"
-                for h in headers:
-                    html += f"<th {th}>{h}</th>"
-                html += "</tr></thead><tbody>"
-                for row in rows:
-                    html += "<tr>"
-                    html += f"<td {td_left}>{row[0]}</td>"
-                    for cell in row[1:]:
-                        html += f"<td {td}>{cell}</td>"
-                    html += "</tr>"
-                html += "</tbody></table>"
-                return ui.div(ui.HTML(html), class_="tbl-scroll")
 
         with ui.nav_panel(title="Interactive Workloop"):
 
