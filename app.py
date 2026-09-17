@@ -289,12 +289,14 @@ ui.tags.style("""
     /* Tighten spacing so the figures sit closer to the tab header */
     .card-body { padding-top: 0.5rem !important; }
     #combined_graphs { margin-top: -4px; }
-    /* Right-align the Show Workloop toggle below the figures */
-    /* Row that holds the metrics table (left) and the toggles (right), top-aligned
-       so the table's top edge lines up with the top of the toggle switches. */
-    .workloop-row { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; margin-top: 4px; }
-    .metrics-table-wrap { flex: 1 1 auto; min-width: 0; }
-    .workloop-toggle-right { display: flex; justify-content: flex-end; align-items: center; gap: 18px; margin-top: 0; margin-bottom: 2px; flex: 0 0 auto; }
+    /* Row that holds the metrics table (left) and a right-hand column (toggles,
+       plus the Work Loop plot when shown) -- top-aligned so the table's top edge
+       lines up with the top of the toggle switches, and the Work Loop plot lands
+       directly under the toggles instead of being pushed down by the table. */
+    .workloop-row { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 24px; margin-top: 4px; }
+    .metrics-table-wrap { flex: 0 0 auto; min-width: 0; }
+    .workloop-right-col { flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; }
+    .workloop-toggle-right { display: flex; justify-content: flex-end; align-items: center; gap: 18px; margin: 0; }
     .workloop-toggle-right .shiny-input-container { width: auto; margin-bottom: 0; }
     /* Reduce the left-hand sidebar font size by 1 point (default is 12pt) */
     .bslib-sidebar-layout > .sidebar, .bslib-sidebar-layout .sidebar-content { font-size: 12pt; }
@@ -306,8 +308,8 @@ ui.tags.style("""
         .shiny-input-container { width: 100% !important; }
         .irs--shiny .irs-line, .irs--shiny .irs-bar { width: 100% !important; }
         .nav-item a { padding: 6px 10px !important; font-size: 0.9em; }
-        /* Stack the metrics table above the toggles on narrow screens instead of
-           squeezing them side by side. */
+        /* Stack the metrics table above the toggles/Work Loop column on narrow
+           screens instead of squeezing them side by side. */
         .workloop-row { flex-direction: column; align-items: stretch; }
         .workloop-toggle-right { justify-content: flex-start; }
     }
@@ -521,45 +523,46 @@ with ui.card():
                         html += "</tbody></table>"
                         return ui.div(ui.HTML(html), class_="tbl-scroll")
 
-                with ui.div(class_="workloop-toggle-right"):
-                    ui.input_switch("show_ecc_con", "Show Eccentric/Concentric Labels", value=False)
-                    ui.input_switch("show_workloop", "Show Workloop", value=False)
+                with ui.div(class_="workloop-right-col"):
+                    with ui.div(class_="workloop-toggle-right"):
+                        ui.input_switch("show_ecc_con", "Show Eccentric/Concentric Labels", value=False)
+                        ui.input_switch("show_workloop", "Show Workloop", value=False)
 
-            with ui.panel_conditional("input.show_workloop"):
+                    with ui.panel_conditional("input.show_workloop"):
 
-                with ui.div(style="width:75%; margin: 0 auto;"):
+                        with ui.div(style="width:100%; margin-top: 6px;"):
 
-                    @render.plot
-                    def work_loop1():
-                        results = run_simulation()
-                        sim_results = results[0]
-                        theoretical_results = results[1]
-                        opt_results = results[2]
-                        if sim_results is None or theoretical_results is None:
-                            print("Simulation failed: one or both result sets are None")
-                            return
+                            @render.plot
+                            def work_loop1():
+                                results = run_simulation()
+                                sim_results = results[0]
+                                theoretical_results = results[1]
+                                opt_results = results[2]
+                                if sim_results is None or theoretical_results is None:
+                                    print("Simulation failed: one or both result sets are None")
+                                    return
 
-                        fig, ax = plt.subplots()
+                                fig, ax = plt.subplots()
 
-                        # Extract force and position data for the work-loop graph
-                        force_total_sim = sim_results['sim_data']['force_total']
-                        position_sim = sim_results['sim_data']['position_mm']
+                                # Extract force and position data for the work-loop graph
+                                force_total_sim = sim_results['sim_data']['force_total']
+                                position_sim = sim_results['sim_data']['position_mm']
 
-                        force_total_theoretical = theoretical_results['sim_data']['force_total']
-                        position_theoretical = theoretical_results['sim_data']['position_mm']
+                                force_total_theoretical = theoretical_results['sim_data']['force_total']
+                                position_theoretical = theoretical_results['sim_data']['position_mm']
 
-                        # Plot force vs. position (excursion)
-                        ax.plot(position_sim, force_total_sim, label="FV, FL, and FT")
-                        ax.plot(position_theoretical, force_total_theoretical, label="FV and FL", linestyle='--')
-                        if opt_results is not None:
-                            ax.plot(opt_results['sim_data']['position_mm'], opt_results['sim_data']['force_total'], label="Optimized Work Loop", linestyle=':', color='purple')
+                                # Plot force vs. position (excursion)
+                                ax.plot(position_sim, force_total_sim, label="FV, FL, and FT")
+                                ax.plot(position_theoretical, force_total_theoretical, label="FV and FL", linestyle='--')
+                                if opt_results is not None:
+                                    ax.plot(opt_results['sim_data']['position_mm'], opt_results['sim_data']['force_total'], label="Optimized Work Loop", linestyle=':', color='purple')
 
-                        ax.set_title("Work Loop (Force vs. Excursion)")
-                        ax.set_xlabel("Excursion (mm)")
-                        ax.set_ylabel("Force (N)")
-                        ax.legend()
+                                ax.set_title("Work Loop (Force vs. Excursion)")
+                                ax.set_xlabel("Excursion (mm)")
+                                ax.set_ylabel("Force (N)")
+                                ax.legend()
 
-                        return fig
+                                return fig
 
         with ui.nav_panel(title="Interactive Workloop"):
 
