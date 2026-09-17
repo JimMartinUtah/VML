@@ -122,6 +122,24 @@ def force_velocity_relationship(F0, Vx, L0, af, n_points=300):
     power = force * v
     return v, force, power
 
+# Eccentric/Concentric phase boundaries for the % of cycle plots. The excursion
+# is a pure sinusoid (position = excursion * sin(2*pi*freq*t)), so the velocity
+# zero-crossings -- and hence the eccentric/concentric transitions -- always fall
+# at exactly 25% and 75% of cycle, independent of frequency, excursion, or the
+# activation onset/offset sliders.
+ECC_CON_SEGMENTS = [(0, 25, "Eccentric"), (25, 75, "Concentric"), (75, 125, "Eccentric")]
+
+def add_ecc_con_labels(ax, fontsize=9):
+    """Annotate an axis's x-axis with Eccentric/Concentric phase labels,
+    mirroring the boundaries at 25% and 75% of cycle."""
+    sec = ax.secondary_xaxis(-0.34)
+    sec.set_xticks([(s + e) / 2 for s, e, _ in ECC_CON_SEGMENTS])
+    sec.set_xticklabels([label for _, _, label in ECC_CON_SEGMENTS], fontsize=fontsize)
+    sec.tick_params(length=0, pad=2)
+    sec.spines['bottom'].set_visible(False)
+    for boundary in (25, 75):
+        ax.axvline(boundary, color='0.6', linewidth=0.6, linestyle=':', zorder=0)
+
 # Optimization function: coordinate descent (alternates onset/offset until convergence)
 # Uses work_actual (net work over full cycle) as objective to avoid the variable-window
 # bias in power_actual, which unfairly favours later onset values.
@@ -266,7 +284,7 @@ ui.tags.style("""
     .card-body { padding-top: 0.5rem !important; }
     #combined_graphs { margin-top: -4px; }
     /* Right-align the Show Workloop toggle below the figures */
-    .workloop-toggle-right { display: flex; justify-content: flex-end; margin-top: 0; margin-bottom: 2px; }
+    .workloop-toggle-right { display: flex; justify-content: flex-end; align-items: center; gap: 18px; margin-top: 0; margin-bottom: 2px; }
     .workloop-toggle-right .shiny-input-container { width: auto; margin-bottom: 0; }
     /* Reduce the left-hand sidebar font size by 1 point (default is 12pt) */
     .bslib-sidebar-layout > .sidebar, .bslib-sidebar-layout .sidebar-content { font-size: 12pt; }
@@ -423,10 +441,16 @@ with ui.card():
                     ax.xaxis.set_major_formatter(FuncFormatter(lambda x, _: f"{x:.0f}"))
                     ax.set_xticks([0, 25, 50, 75, 100, 125])
 
+                if input.show_ecc_con():
+                    ecc_con_fontsize = 7 if is_mobile else 9
+                    for ax in [ax_p, ax_v, ax_f, ax_pw]:
+                        add_ecc_con_labels(ax, fontsize=ecc_con_fontsize)
+
                 fig.tight_layout()
                 return fig
 
             with ui.div(class_="workloop-toggle-right"):
+                ui.input_switch("show_ecc_con", "Show Eccentric/Concentric Labels", value=False)
                 ui.input_switch("show_workloop", "Show Workloop", value=False)
 
             with ui.panel_conditional("input.show_workloop"):
