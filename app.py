@@ -134,8 +134,8 @@ def add_ecc_con_labels(ax, fontsize=9):
     eccentric/concentric phase plus a centered label, mirroring the PowerPoint
     mockup (arrows over Eccentric / Concentric / Eccentric at 0-25/25-75/75-125%)."""
     trans = ax.get_xaxis_transform()
-    arrow_y = -0.22
-    text_y = -0.30
+    arrow_y = -0.32
+    text_y = -0.42
     for start, end, label in ECC_CON_SEGMENTS:
         ax.annotate('', xy=(end, arrow_y), xytext=(start, arrow_y),
                      xycoords=trans, textcoords=trans, annotation_clip=False,
