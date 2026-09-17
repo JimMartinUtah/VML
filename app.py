@@ -130,13 +130,19 @@ def force_velocity_relationship(F0, Vx, L0, af, n_points=300):
 ECC_CON_SEGMENTS = [(0, 25, "Eccentric"), (25, 75, "Concentric"), (75, 125, "Eccentric")]
 
 def add_ecc_con_labels(ax, fontsize=9):
-    """Annotate an axis's x-axis with Eccentric/Concentric phase labels,
-    mirroring the boundaries at 25% and 75% of cycle."""
-    sec = ax.secondary_xaxis(-0.34)
-    sec.set_xticks([(s + e) / 2 for s, e, _ in ECC_CON_SEGMENTS])
-    sec.set_xticklabels([label for _, _, label in ECC_CON_SEGMENTS], fontsize=fontsize)
-    sec.tick_params(length=0, pad=2)
-    sec.spines['bottom'].set_visible(False)
+    """Annotate an axis's x-axis with a double-headed arrow spanning each
+    eccentric/concentric phase plus a centered label, mirroring the PowerPoint
+    mockup (arrows over Eccentric / Concentric / Eccentric at 0-25/25-75/75-125%)."""
+    trans = ax.get_xaxis_transform()
+    arrow_y = -0.22
+    text_y = -0.30
+    for start, end, label in ECC_CON_SEGMENTS:
+        ax.annotate('', xy=(end, arrow_y), xytext=(start, arrow_y),
+                     xycoords=trans, textcoords=trans, annotation_clip=False,
+                     arrowprops=dict(arrowstyle='<->', color='0.35', linewidth=1.1,
+                                      shrinkA=0, shrinkB=0))
+        ax.text((start + end) / 2, text_y, label, transform=trans,
+                ha='center', va='top', fontsize=fontsize, clip_on=False)
     for boundary in (25, 75):
         ax.axvline(boundary, color='0.6', linewidth=0.6, linestyle=':', zorder=0)
 
@@ -443,7 +449,7 @@ with ui.card():
 
                 if input.show_ecc_con():
                     ecc_con_fontsize = 7 if is_mobile else 9
-                    for ax in [ax_p, ax_v, ax_f, ax_pw]:
+                    for ax in [ax_f, ax_pw]:
                         add_ecc_con_labels(ax, fontsize=ecc_con_fontsize)
 
                 fig.tight_layout()
