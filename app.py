@@ -257,7 +257,15 @@ def run_simulation():
     fv_only_params['fl_effect'] = False
     fv_only_results = thelen_muscle(**fv_only_params)
 
-    return sim_results, theoretical_results, opt_results, fv_only_results
+    # F-V and F-T Only: same onset/offset timing and activation/deactivation dynamics as
+    # the actual (slider-based) simulation, but with the force-length effect disabled.
+    # Everything else matches sim_results exactly, so comparing this to sim_results
+    # isolates the contribution of the force-length relationship alone.
+    fv_ft_params = muscle_params.copy()
+    fv_ft_params['fl_effect'] = False
+    fv_ft_results = thelen_muscle(**fv_ft_params)
+
+    return sim_results, theoretical_results, opt_results, fv_only_results, fv_ft_results
 
 # Persistent click position for Graphs2 scrubbing
 _g2_xmax = reactive.Value(None)
@@ -475,6 +483,7 @@ with ui.card():
                         theo = r[1]
                         opt = r[2]
                         fv = r[3]
+                        fv_ft = r[4] if len(r) > 4 else None
                         if sim is None or theo is None:
                             return ui.p("No results available")
                         opt_col = [
@@ -493,14 +502,22 @@ with ui.card():
                             round(fv['power_positive'], 1),
                             round(fv['power_negative'], 1),
                         ] if fv is not None else ["\u2014", "\u2014", "\u2014", "\u2014", "\u2014", "\u2014"]
-                        headers = ["Metric", "FV, FL, and FT", "FV and FL", "F-V Only"]
+                        fv_ft_col = [
+                            round(fv_ft['work_actual'], 1),
+                            round(fv_ft['work_positive'], 1),
+                            round(fv_ft['work_negative'], 1),
+                            round(fv_ft['power_actual'], 1),
+                            round(fv_ft['power_positive'], 1),
+                            round(fv_ft['power_negative'], 1),
+                        ] if fv_ft is not None else ["\u2014", "\u2014", "\u2014", "\u2014", "\u2014", "\u2014"]
+                        headers = ["Metric", "FV, FL, and FT", "FV and FT", "FV and FL", "F-V Only"]
                         rows = [
-                            ["Total Work (J)",     round(sim['work_actual'], 1),    round(theo['work_actual'], 1),    fv_col[0]],
-                            ["Positive Work (J)",  round(sim['work_positive'], 1),  round(theo['work_positive'], 1),  fv_col[1]],
-                            ["Negative Work (J)",  round(sim['work_negative'], 1),  round(theo['work_negative'], 1),  fv_col[2]],
-                            ["Mean Power (W)",     round(sim['power_actual'], 1),   round(theo['power_actual'], 1),   fv_col[3]],
-                            ["Positive Power (W)", round(sim['power_positive'], 1), round(theo['power_positive'], 1), fv_col[4]],
-                            ["Negative Power (W)", round(sim['power_negative'], 1), round(theo['power_negative'], 1), fv_col[5]],
+                            ["Total Work (J)",     round(sim['work_actual'], 1),    fv_ft_col[0], round(theo['work_actual'], 1),    fv_col[0]],
+                            ["Positive Work (J)",  round(sim['work_positive'], 1),  fv_ft_col[1], round(theo['work_positive'], 1),  fv_col[1]],
+                            ["Negative Work (J)",  round(sim['work_negative'], 1),  fv_ft_col[2], round(theo['work_negative'], 1),  fv_col[2]],
+                            ["Mean Power (W)",     round(sim['power_actual'], 1),   fv_ft_col[3], round(theo['power_actual'], 1),   fv_col[3]],
+                            ["Positive Power (W)", round(sim['power_positive'], 1), fv_ft_col[4], round(theo['power_positive'], 1), fv_col[4]],
+                            ["Negative Power (W)", round(sim['power_negative'], 1), fv_ft_col[5], round(theo['power_negative'], 1), fv_col[5]],
                         ]
                         # Only show the "Optimized" column when the optimize checkbox is checked
                         if opt_col is not None:
